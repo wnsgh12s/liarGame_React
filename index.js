@@ -14,9 +14,11 @@ let userData = new Map()
 let roomDataObj = new Map()
 io.on('connection',(socket)=>{
   //유저 접속
+  
   socket.on('addUser',(nickName)=>{
     userData.set(socket.id,{nickName,id:socket.id})
-    io.emit('joinUser','참가')
+    io.to(socket.id).emit('joinUser','참가')
+    console.log(socket.id)
   })
   socket.on('isLogin',async(data)=>{
     let login = userData.get(socket.id) === undefined ? false : true
@@ -40,6 +42,5 @@ io.on('connection',(socket)=>{
     }
     roomDataObj.set(data.roomName,roomData)
     io.emit('roomList',roomData)
-    console.log(roomDataObj)
   })
 })
