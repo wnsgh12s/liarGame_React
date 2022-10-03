@@ -80,6 +80,7 @@ io.on('connection',(socket)=>{
       roomNumber : `room${count}`,
       participant : [socket.id]
     }
+    
     roomDataObj.set(data.roomName,serverRoomData)
     io.emit('roomList',[...roomDataObj.values()])
     io.to(socket.id).emit('joinRoom',clientRoomData.roomNumber)
@@ -94,6 +95,8 @@ io.on('connection',(socket)=>{
     room.participant?.push(socket.id) 
     io.to(socket.id).emit('joinRoom',room.roomNumber)
     socket.join(roomName)
+    let data = room.participant.filter((id)=> id === socket.id)[0 ]
+    socket.emit('seat',data)
     console.log(userData,'조인')
   })
   socket.on('passwordCheck',(roomData)=>{
@@ -130,8 +133,7 @@ io.on('connection',(socket)=>{
   socket.on('chat',(ChatData)=>{
     let user = userData.get(socket.id)
     let room = roomDataObj.get(user.joinedRoom)
-    room.chat.push(ChatData) 
+    room.chat.push(` ${user.nickName} :${ChatData}`) 
     io.to(user.joinedRoom).emit('chat',room.chat)    
   })
-
 })
