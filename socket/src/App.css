@@ -1,0 +1,287 @@
+@import url(./static/reset.css);
+/* 공통 */
+.App {
+  height: 100vh;
+}
+
+[class $= 'inner'] {
+  width: 1200px;
+  height: 100%;
+  margin: auto;
+}
+button {
+  padding: 5px;
+  background: none;
+  font-size: 1em;
+  border-radius: 5px;
+  box-shadow: 1px 2px ;
+  background-color: #eee;
+  transition: all 0.2s;
+}
+button:hover {
+  background-color: #333;
+  color: #eee;
+  box-shadow: none;
+  cursor: pointer;
+}
+input {
+  text-align: center;
+}
+/* 로그인창 */
+.login{
+  background: url(./static/img/login.jpg) center center /cover;
+  text-align: center;
+  width: 100vw;
+  height: 100vh;
+}
+.login .login_box{
+  padding: 100px 100px 100px 100px;
+  width: 50%;
+  border: 5px solid;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
+  background-color: #eee;
+}
+.login h1 {
+  margin-bottom: 20px;
+}
+.login .interaction_box{
+  display: flex;
+  width: 50%;
+  margin: auto;
+  margin-bottom: 30px;
+  justify-content: space-between;
+}
+.login .character_box{
+  width: 100px;
+  height: 100px;
+  margin: auto;
+  background-color: red;
+}
+.login input {
+  width: 50%;
+  margin-bottom: 10px;
+}
+.login button{
+  display: block;
+  margin: auto;
+}
+/* 로비 */
+.lobby {
+  height: 100vh;
+  background: url(./static/img/lobby.jpg) center center /cover;
+  margin: auto; 
+}
+#lobby_header {
+  padding-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+#lobby_main { 
+  color: #eee;
+  text-shadow: 1px 1px 1px rgb(0, 0, 0);
+  position: absolute;
+  width: 80%;
+  display: flex;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
+  justify-content: space-between;
+}
+#lobby_main table{
+}
+#lobby_main table tr{
+  border-bottom: 1px solid;
+  height: 20px;
+}
+#lobby_main table td,th {
+  padding: 3px;
+}
+#lobby_main .l_table{
+  width: 60%;
+  height: 200px;
+  border: 5px solid;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+#lobby_main .l_table table tbody tr:hover{
+  background-color: #999;
+}
+#lobby_main .l_table table{
+  width: 100%;
+  text-align: center;
+}
+#lobby_main .l_table .create_room_btn{
+  width: 20%;
+  margin: 0 auto -60px auto;
+}
+
+#lobby_main .r_table{
+  width: 30%;
+  height: 200px;
+  border: 5px solid;
+}
+#lobby_main .r_table table{
+  width: 100%;
+  text-align: center;
+}
+/* Game */
+.game {
+  color: #eee;
+  height: 100vh;
+  background: url(./static/img/game.jpg) center center /cover;
+}
+#game_header { 
+}
+#game_header nav { 
+  padding-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  margin-bottom: 30px;
+}
+#game_header .info_gnb{
+  display: flex;
+  margin-right: 20px;
+}
+#game_header .info_gnb li{
+  margin-right: 10px;
+}
+#game_header .interaction_gnb{
+  display: flex;
+}
+#game_header .interaction_gnb li{
+  margin-right: 10px;
+}
+[class ^= 'player'] {
+  display: flex;
+  border: 5px solid;
+  box-sizing: border-box;
+  width: 100%;
+  height: 20%;
+  border-radius: 5px;
+  background-color: #fefeff3c;
+}
+#game_main {
+  display: flex;
+  justify-content: space-between;
+  height: 80%;
+}
+#game_main .left_player {
+  width: 20%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+#game_main .chat_board {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  color: #eee;
+  border: 5px solid #333;
+  width: 50%;
+  border-radius: 5px;
+
+  justify-content: space-between;
+}
+#game_main .chat_box {
+  overflow: scroll;
+}
+#game_main .chat_box::-webkit-scrollbar{
+  display: none;
+}
+#game_main .chat {
+  border-bottom: 1px solid;
+  padding: 10px;  
+  box-sizing: border-box;
+} 
+#game_main .chat_input {
+  text-align: center;
+  background-color: #333;
+}
+#game_main .chat_input input {
+  border-radius: 5px;
+  padding: 5px 0 5px 0;
+  width: 50%;
+  margin-right: 5px;
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
+#game_main .chat_btn {
+  font-size: small;
+}
+#game_main .chat_board::-webkit-scrollbar{
+  display: none;
+}
+#game_main .right_player{
+  width: 20%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+
+/* 모달창 */
+.modal{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(3, 3, 3, 0.445);
+}
+.modal_box {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
+  width: 30%;
+  padding: 20px;
+  background-color: #333;
+  
+  border: 2px solid;
+  border-radius: 5px;
+}
+.modal .head{
+  color: #eeee;
+  margin-bottom: 20px;
+}
+
+.modal .info{
+  color: #eee;
+  margin-bottom: 10px;
+}
+
+.modal .input_box{
+  display: flex;
+  flex-direction: column;
+}
+.modal .input_box label {
+  color: #eee;
+  margin-right: 5px;
+}
+.modal .input_box .top{
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.modal .input_box .top input {
+  
+}
+.modal .input_box .bottom{
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.modal .btn_box button:nth-child(1){
+  margin-right: 10px;
+}
