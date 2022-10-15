@@ -1,13 +1,14 @@
 const express = require('express')
 const app = express()
-const http = require('http').createServer(app)
+const http = require('http').createServer(app).listen(8080)
 const cors = require('cors')
 const io = require('socket.io')(http,{cors:{
   origin:'*',
   credential:false
 }})
 
-let countObj = {}
+
+const countObj = {}
 function createCount(obj,num){
   if(!obj[num]){
     obj[num] = num
@@ -17,10 +18,6 @@ function createCount(obj,num){
     return createCount(obj,num)
   }
 }
-
-http.listen('8080',()=>{
-  console.log('헤위')
-})
 let userData = new Map()
 let roomDataObj = new Map()
 io.on('connection',(socket)=>{
@@ -46,18 +43,22 @@ io.on('connection',(socket)=>{
     let room = roomDataObj.get(user?.joinedRoom)
     //참가한 방이 있으면 참가자 배열에서 삭제 
     if(room !== undefined){
-      room.participant.forEach((id,index)=>{
-        if(id === socket.id) room.participant.splice(index,1)  
+      room.participant.delete(socket.id)
+      room.seat.forEach((id,i)=>{
+        if(id === socket.id){
+          room.seat.splice(i,1)
+        }
       })
       // 방에 참가자가 0명이면 방 없애버림
-      if(room.participant.length < 1) {
+      if(room.participant.size < 1) {
+        let number = room.roomNumber.replace(/[^0-9]/g,"")
+        delete countObj[number]
         roomDataObj.delete(user?.joinedRoom)
         io.emit('roomList',[...roomDataObj.values()])
       }
     }
     // 나간유저 제거
     userData.delete(socket.id)
-    console.log(userData,'디스커넥트')
   })
 
   socket.on('createRoom',(data)=>{
@@ -69,18 +70,24 @@ io.on('connection',(socket)=>{
       roomName: data.roomName,
       roomPassword : data.roomPassword,
       roomNumber : `room${count}`,
-      participant : [socket.id],
+      seat:[socket.id],
       chat:[]
     }
+    serverRoomData.participant = new Map().set(socket.id,{
+      id : socket.id,
+      nickName : user.nickName,
+      number : serverRoomData.seat.indexOf(socket.id)
+    })
     let clientRoomData = {
       state: data.roomPassword ? 'private' : 'public',
       personnel:1,
       roomName: data.roomName,
       roomPassword : data.roomPassword !== '' ? true : false,
       roomNumber : `room${count}`,
-      participant : [socket.id]
     }
-    
+    clientRoomData.participant = new Map().set(socket.id,{
+      id : socket.id
+    })
     roomDataObj.set(data.roomName,serverRoomData)
     io.emit('roomList',[...roomDataObj.values()])
     io.to(socket.id).emit('joinRoom',clientRoomData.roomNumber)
@@ -92,12 +99,15 @@ io.on('connection',(socket)=>{
     let user = userData.get(socket.id)
     if(room === undefined) return
     user['joinedRoom'] = roomName
-    room.participant?.push(socket.id) 
+    room.seat.push(socket.id)
+    room.participant.set(socket.id,{
+      id : socket.id,
+      nickName : user.nickName,
+      number : room.seat.indexOf(socket.id)
+    })
+     
     io.to(socket.id).emit('joinRoom',room.roomNumber)
     socket.join(roomName)
-    let data = room.participant.filter((id)=> id === socket.id)[0 ]
-    socket.emit('seat',data)
-    console.log(userData,'조인')
   })
   socket.on('passwordCheck',(roomData)=>{
     let room = roomDataObj.get(roomData.roomName)
@@ -113,21 +123,34 @@ io.on('connection',(socket)=>{
   })
 
   socket.on('disconnectRoom',(data)=>{
-    console.log(data)
     let user = userData.get(socket.id)
     let room = roomDataObj.get(user?.joinedRoom)
     // 방에서 나간 유저의 데이터를 방데이터와 유저 데이터에서 제거
     if(user){
-      room?.participant.forEach((id,index)=>{
-        if(id === socket.id) room.participant.splice(index,1)  
+      socket.leave(room.roomName)
+      room.participant.delete(socket.id)
+      room.seat.forEach((id,i)=>{
+        if(id === socket.id){
+          room.seat.splice(i,1)
+        }
       })
       // 방에서 나간 유저의 방의 참가인원이 1보다 작으면 방을 없애버리자
-      if(room?.participant.length < 1 ) {
+      if(room?.participant.size < 1 ) {
+        let number = room.roomNumber.replace(/[^0-9]/g,"")
+        delete countObj[number]
         roomDataObj.delete(user.joinedRoom)
+        io.emit('roomList',[...roomDataObj.values()])
+        
       }
       user.joinedRoom = ''
     }
-    console.log(userData,'디커룸')
+  })
+  socket.on('access',(id)=>{
+    let user = userData.get(id)
+    if(user){
+      let room = roomDataObj.get(user.joinedRoom)
+      io.to(room.roomName).emit('seat',room.participant.get(socket.id))
+    }
   })
   
   socket.on('chat',(ChatData)=>{
