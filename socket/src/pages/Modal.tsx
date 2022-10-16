@@ -39,11 +39,19 @@ function CrtRoom({head,type,on,sk,rName}:Modal){
   let [roomPassword,setRoomPassword] = useState('')
   useEffect(()=>{
     setRoomName(rName)
+    alert(rName)
   },[])
   return(
     <div className="modal_box">
       <h1 className="head">{head}</h1>
-      <div className="input_box">
+      <div
+      onKeyDown={(e)=>{
+        if(e.key !== 'Enter') return
+        if(type === 'createRoom' && roomName === '' || roomName && roomName.length > 10) return alert('제목이 10글자보다 크거나 빈칸입니다')
+        type === 'createRoom' ? sk?.emit('createRoom',{roomName,roomPassword}) : sk?.emit('passwordCheck',{roomPassword,roomName})
+        on(false)
+      }}
+      className="input_box">
         {type === 'createRoom' && <div className="top">
           <label htmlFor="">방 제목</label>
           <input onChange={(e)=>{
@@ -56,8 +64,10 @@ function CrtRoom({head,type,on,sk,rName}:Modal){
         </div>
       </div>
       <div className="btn_box">
-        <button onClick={()=>{
-          if(type === 'createRoom' && roomName === '' || roomName && roomName.length > 10) return alert('제목이 10글자보다 크거나 빈칸입니다')
+        <button 
+        onClick={()=>{
+          if((type === 'createRoom' && roomName === '') || (roomName && roomName.length > 10)) return alert('제목이 10글자보다 크거나 빈칸입니다')
+          alert(roomName)
           type === 'createRoom' ? sk?.emit('createRoom',{roomName,roomPassword}) : sk?.emit('passwordCheck',{roomPassword,roomName})
           on(false)
           }}>{type === 'createRoom' ? '방 만들기' : '방 참가'}</button>

@@ -34,6 +34,9 @@ interface Alert {
     sk.on('connect',()=>{
       console.log('연결')
     })
+    sk.on('passwordCheck',(roomName)=>{
+      sk.emit('joinRoom',roomName)
+    })
     sk.emit('isLogin',sk.id)
     sk.on('isLogin',(login)=>{
       login ? setIsLogin(true) : setIsLogin(false)

@@ -105,15 +105,16 @@ io.on('connection',(socket)=>{
       nickName : user.nickName,
       number : room.seat.indexOf(socket.id)
     })
-     
     io.to(socket.id).emit('joinRoom',room.roomNumber)
     socket.join(roomName)
   })
   socket.on('passwordCheck',(roomData)=>{
+    let user = userData.get(socket.id)
     let room = roomDataObj.get(roomData.roomName)
     if(room.roomPassword === roomData.roomPassword){
-      io.to(socket.id).emit('joinRoom',room.roomNumber)
+      user['joinedRoom'] = roomData.roomName
       socket.join(room.roomName)
+      io.to(socket.id).emit('passwordCheck',roomData.roomName)
     }else{
       io.to(socket.id).emit('alert',{
         head : '패스워드가 틀렸습니다!!!!',
