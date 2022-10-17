@@ -23,12 +23,10 @@ function Game({sk,userNick}:Props){
         copy = [...rightPlayerDatas]
         copy[seat.number] = seat.nickName
         setRightPlayerDatas(copy)
-        console.log(copy)
       }else{
         copy = [...leftPlayerDatas]
         copy[seat.number] = seat.nickName
         setLeftPlayerDatas(copy)
-        console.log(copy)
       }
     })
     sk.on('chat',(chatData)=>{
@@ -46,7 +44,6 @@ function Game({sk,userNick}:Props){
     }
   },[chatDatas])
   let navigater = useNavigate()
-
   return(
     <div className="game">
       <div className="game_inner">
@@ -61,7 +58,12 @@ function Game({sk,userNick}:Props){
                 navigater('/lobby')
                 sk.emit('disconnectRoom','이게왜?')
                 }}>나가기</button></li>
-              <li><button className="ready_btn">준비</button></li>
+              <li><button
+              onClick={()=>{
+                alert('전송완료')
+                sk.emit('ready')
+              }} 
+              className="ready_btn">준비</button></li>
             </ul>
           </nav>
         </header>

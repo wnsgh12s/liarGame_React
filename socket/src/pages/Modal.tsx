@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { isButtonElement } from "react-router-dom/dist/dom"
 import { Socket } from "socket.io-client"
@@ -37,10 +37,13 @@ function CrtRoom({head,type,on,sk,rName}:Modal){
   let navigator = useNavigate()
   let [roomName,setRoomName] = useState<string|undefined>('')
   let [roomPassword,setRoomPassword] = useState('')
+  let focus = useRef<HTMLInputElement>(null)
+  let focusd = useRef<HTMLInputElement>(null)
   useEffect(()=>{
     setRoomName(rName)
-    alert(rName)
-  },[])
+    console.log(focus.current)
+    focus.current?.focus()    
+    },[])
   return(
     <div className="modal_box">
       <h1 className="head">{head}</h1>
@@ -54,13 +57,17 @@ function CrtRoom({head,type,on,sk,rName}:Modal){
       className="input_box">
         {type === 'createRoom' && <div className="top">
           <label htmlFor="">방 제목</label>
-          <input onChange={(e)=>{
+          <input 
+          ref={focus}
+          onChange={(e)=>{
             setRoomName(e.target.value)
             }} type="text" />
         </div>}
         <div className="bottom">
           <label htmlFor="">비밀번호</label>
-          <input onChange={(e)=>{setRoomPassword(e.target.value)}} type="text" />
+          <input
+          ref={type === 'password' ? focus : focusd} 
+          onChange={(e)=>{setRoomPassword(e.target.value)}} type="text" />
         </div>
       </div>
       <div className="btn_box">
