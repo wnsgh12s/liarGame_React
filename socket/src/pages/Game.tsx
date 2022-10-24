@@ -8,10 +8,11 @@ interface Props {
   userNick : string
 }
 
-function Game({sk,userNick}:Props){
+function Game({sk}:Props){
   const scrollRef = useRef<HTMLInputElement>(null)
-  
+  const readyRef = useRef<HTMLDivElement>(null)  
   let [inputData,setInputData] = useState('')
+  let [playerNumber,setPlayerNumber] = useState('')
   let [chatDatas,setChatDatas] = useState([])
   let [leftPlayerDatas,setLeftPlayerDatas] = useState(['','','',''])
   let [rightPlayerDatas,setRightPlayerDatas] = useState(['','','',''])
@@ -29,10 +30,16 @@ function Game({sk,userNick}:Props){
         setLeftPlayerDatas(copy)
       }
     })
+    sk.on('ready',(seatNumber)=>{
+      if(readyRef.current){
+        readyRef.current.style.background = 'red'  
+      }
+    })
     sk.on('chat',(chatData)=>{
       setChatDatas(chatData)
     })
     return()=>{ 
+      sk.off('ready')
       sk.off('chat')
       sk.off('seat')
     }
@@ -60,8 +67,7 @@ function Game({sk,userNick}:Props){
                 }}>나가기</button></li>
               <li><button
               onClick={()=>{
-                alert('전송완료')
-                sk.emit('ready')
+                sk.emit('ready')      
               }} 
               className="ready_btn">준비</button></li>
             </ul>
@@ -72,7 +78,7 @@ function Game({sk,userNick}:Props){
             {
               leftPlayerDatas && leftPlayerDatas.map((e,i)=>{
                 return(
-                  <div className={`players${i+1}`}>{e}</div>
+                  <div ref={true ? readyRef : scrollRef} className={`players${i+1}`}>{e}</div>
                 )
               })
             }
@@ -95,7 +101,9 @@ function Game({sk,userNick}:Props){
                     sk.emit('chat',inputData)
                   }
                 }} type="text" />
-              <button className="chat_btn">전송</button>
+              <button
+
+              className="chat_btn">전송</button>
             </div>
           </div>
           <div className="right_player">

@@ -164,6 +164,7 @@ io.on('connection',(socket)=>{
   
   socket.on('chat',(ChatData)=>{
     let user = userData.get(socket.id)
+    if(!user) return
     let room = roomDataObj.get(user.joinedRoom)
     room.chat.push(` ${user.nickName} :${ChatData}`) 
     io.to(user.joinedRoom).emit('chat',room.chat)    
@@ -171,16 +172,19 @@ io.on('connection',(socket)=>{
 
   socket.on('ready',()=>{
     let user = userData.get(socket.id)
+    if(!user) return
     let room = roomDataObj.get(user.joinedRoom)
     let readyUser = room.participant.get(socket.id)
     let count = 0
-    if(user){
       readyUser.ready = !readyUser.ready
       room.participant.forEach(e=>{
         if(e.ready) count ++
       })
-      console.log(count)
       room.readyCount = count
-    }
+      io.to(user.joinedRoom).emit('ready',readyUser.number)
+      if(count >= room.seat.length){
+        io.to(user.joinedRoom).emit('gameStart')
+      }
   })
 })
+  
